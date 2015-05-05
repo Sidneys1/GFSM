@@ -1,62 +1,35 @@
-﻿using System.Linq;
+﻿namespace GFSM {
+    /// <summary>
+    /// Represents a FSM state.
+    /// </summary>
+    /// <typeparam name="T">The type of the state</typeparam>
+    public abstract class State<T> where T : State<T> {
+        #region Properties
 
-namespace GFSM {
+        public FiniteStateMachine<T> StateMachine { get; }
 
-    public abstract class State {
+        #endregion Properties
+        
+        #region Constructors
 
-		#region Properties
-
-		public StateMode Mode { get; private set; }
-
-        public abstract Transition[] ToThisTransitions { get; }
-
-        public abstract Transition[] FromThisTransitions { get; }
-
-		#endregion Properties
-
-
-		#region Constructors
-
-		protected State(StateMode initialMode) {
-            Mode = initialMode;
-		}
-
-		#endregion Constructors
-
-
-		#region Methods
-
-		public void TransitionFrom(Transition transition) {
-            if (!FromThisTransitions.Contains(transition))
-                throw new InvalidTransitionException($"Transition '{transition}' is invalid.");
-
-            switch (transition.Command) {
-                case Command.Deactivate:
-                    Exit();
-                    break;
-
-                case Command.Pause:
-                    Pause();
-                    break;
-            }
+        protected State(FiniteStateMachine<T> stateMachine) {
+            StateMachine = stateMachine;
         }
 
-        public void TransitionTo(Transition transition) {
-            if (!ToThisTransitions.Contains(transition))
-                throw new InvalidTransitionException($"Transition '{transition}' is invalid.");
+        #endregion Constructors
 
-            Enter();
-        }
+        #region Methods
 
+        /// <summary>
+        /// Is called when this state is transitioned into
+        /// </summary>
         public virtual void Enter() {
         }
 
-        public virtual void Pause() {
+        public override string ToString() {
+            return GetType().Name;
         }
 
-        public virtual void Exit() {
-		}
-
-		#endregion Methods
-	}
+        #endregion Methods
+    }
 }

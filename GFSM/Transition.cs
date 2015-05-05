@@ -1,45 +1,65 @@
-﻿using System;
+﻿namespace GFSM {
+    /// <summary>
+    /// Represents a transition from one state to another
+    /// </summary>
+    /// <typeparam name="T">The type of state.</typeparam>
+    public class Transition<T> where T : State<T> {
+        #region Fields
 
-namespace GFSM {
+        private readonly int _hash;
 
-    public class Transition {
+        #endregion Fields
 
-		#region Fields
+        #region Properties
 
-		public readonly Command Command;
-        public readonly Type To;
-        public readonly Type From;
+        public string Token { get; }
 
-		#endregion Fields
+        public State<T> To { get; }
 
+        public State<T> From { get; }
 
-		#region Constructors
+        public Mode TransitionMode { get; }
 
-		public Transition(Command command, Type to, Type frm) {
-            Command = command;
+        #endregion Properties
+
+        #region Constructors
+
+        public Transition(string token, State<T> to, State<T> frm, Mode tMode = Mode.PushPop) {
+            Token = token;
             To = to;
             From = frm;
-		}
+            TransitionMode = tMode;
+            _hash = Token.GetHashCode() ^ To?.GetHashCode() ?? 0 ^ From?.GetHashCode() ?? 0 ^ tMode.GetHashCode();
+        }
 
-		#endregion Constructors
+        #endregion Constructors
 
+        #region Methods
 
-		#region Methods
-
-		public override bool Equals(object obj) {
-            var t = obj as Transition;
+        public override bool Equals(object obj) {
+            var t = obj as Transition<T>;
             if (t == null) return false;
-            return t.Command == Command && t.To == To && t.From == From;
+            return t.Token == Token && t.To == To && t.From == From && t.TransitionMode == TransitionMode;
         }
 
         public override string ToString() {
-            return $"{From.Name} is {Command}d by {To.Name}";
+            return $"{From} + '{Token}' = {To}";
         }
 
         public override int GetHashCode() {
-            return Command.GetHashCode() ^ To.GetHashCode() ^ From.GetHashCode();
-		}
+            return _hash;
+        }
 
-		#endregion Methods
-	}
+        #endregion Methods
+
+        #region Enums
+
+        public enum Mode {
+            Pop,
+            Push,
+            PushPop
+        }
+
+        #endregion Enums
+    }
 }

@@ -1,14 +1,12 @@
 ﻿using System;
 
 namespace GFSM {
-
     public class InvalidTransitionException : Exception {
+        #region Constructors
 
-		#region Constructors
+        public InvalidTransitionException(string message) : base(message) {
+        }
 
-		public InvalidTransitionException(string message) : base(message) {
-		}
-
-		#endregion Constructors
-	}
+        #endregion Constructors
+    }
 }
