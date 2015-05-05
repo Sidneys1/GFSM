@@ -24,7 +24,7 @@
 
         #region Constructors
 
-        public Transition(string token, State<T> to, State<T> frm, Mode tMode = Mode.PushPop) {
+        public Transition(string token, State<T> frm, State<T> to, Mode tMode = Mode.Push) {
             Token = token;
             To = to;
             From = frm;
@@ -53,12 +53,6 @@
         #endregion Methods
 
         #region Enums
-
-        public enum Mode {
-            Pop,
-            Push,
-            PushPop
-        }
 
         #endregion Enums
     }
