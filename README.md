@@ -25,7 +25,7 @@ public class EndState : MyStateBase {
   public override void Enter() {
     base.Enter();
     Console.WriteLine("Entered EndState");
-    StateMachine.Transition("end");
+    StateMachine.Transition("next");
   }
 }
 
@@ -38,9 +38,13 @@ public static void main() {
   
   fsm.AddTransition(new Transition<MyStateBase>("start", null, start));
   fsm.AddTransition(new Transition<MyStateBase>("next", start, end));
-  fsm.AddTransition(new Transition<MyStateBase>("end", end, null));
+  fsm.AddTransition(new Transition<MyStateBase>("next", end, null));
   
-  fsm.Transitioned += t => if (t.To == null) Console.WriteLine("Exited!");
+  fsm.Transitioned += t => {
+    Console.WriteLine(t);
+    if (t.To == null)
+      Console.WriteLine("Exited!");
+  };
   
   // We can transition into StartState from a null state
   fsm.Transition("start");
@@ -48,7 +52,10 @@ public static void main() {
 /*
 Will print:
 Entered StartState
+null + 'start' = StartState
 Entered EndState
+StartState + 'next' = EndState
+EndState + 'next' = null
 Exited!
 */
 ```
