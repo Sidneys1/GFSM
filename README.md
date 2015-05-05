@@ -14,33 +14,18 @@ public class MyFiniteStateMachine : FiniteStateMachine<MyStateBase> { }
 
 // And can create our own states:
 public class StartState : MyStateBase {
-  public override Transition[] ToThisTransitions { get; } = {
-    // Allow transition in from nothing  
-    new Transition(Command.Deactivate, typeof(StartState), null)
-  };
-  public override Transition[] FromThisTransitions { get; } = {
-    new Transition(Command.Deactivate, typeof(EndState), typeof(StartState))
-  };
-  
   public override void Enter() {
     base.Enter();
     Console.WriteLine("Entered StartState");
-  }
-
-  public override void Exit() {
-    base.Exit();
-    Console.WriteLine("Exited StartState");
+    StateMachine.Transition("next");
   }
 }
 public class EndState : MyStateBase {
-  public override Transition[] ToThisTransitions { get; } = {
-    new Transition(Command.Deactivate, typeof(EndState), typeof(StarState))
-  };
-  
   // No out transitions needed.
   public override void Enter() {
     base.Enter();
     Console.WriteLine("Entered EndState");
+    StateMachine.Transition("end");
   }
 }
 
@@ -51,15 +36,19 @@ public static void main() {
   fsm.States.Add(start);
   fsm.States.Add(end);
   
+  fsm.AddTransition(new Transition<MyStateBase>("start", null, start));
+  fsm.AddTransition(new Transition<MyStateBase>("next", start, end));
+  fsm.AddTransition(new Transition<MyStateBase>("end", end, null));
+  
+  fsm.Transitioned += t => if (t.To == null) Console.WriteLine("Exited!");
+  
   // We can transition into StartState from a null state
-  fsm.Transition(start);
-  // And transition from StartState into EndState
-  fsm.Transition(end);
+  fsm.Transition("start");
 }
 /*
 Will print:
 Entered StartState
-Exited StartState
 Entered EndState
+Exited!
 */
 ```
