@@ -6,7 +6,7 @@ Implementation is easy:
 ```C#
 // First you will need a base class for your States:
 public abstract class MyStateBase : State {
-  protected MyStateBase() : base(StateMode.Active) { }
+  protected MyStateBase(FiniteStateMachine<MyStateBase> stateMachine) : base(stateMachine) { }
 }
 
 // Then we can create our FSM:
@@ -31,8 +31,8 @@ public class EndState : MyStateBase {
 
 public static void main() {
   var fsm = new MyFiniteStateMachine();
-  var start = new StartState();
-  var end = new EndState();
+  var start = new StartState(fsm);
+  var end = new EndState(fsm);
   fsm.States.Add(start);
   fsm.States.Add(end);
   
