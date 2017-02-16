@@ -2,34 +2,15 @@
     /// <summary>
     /// Represents a FSM state.
     /// </summary>
-    /// <typeparam name="T">The type of the state</typeparam>
-    public abstract class State<T> where T : State<T> {
-        #region Properties
-
-        public FiniteStateMachine<T> StateMachine { get; }
-
-        #endregion Properties
-        
-        #region Constructors
-
-        protected State(FiniteStateMachine<T> stateMachine) {
-            StateMachine = stateMachine;
-        }
-
-        #endregion Constructors
-
-        #region Methods
-
+    public interface IState {
         /// <summary>
         /// Is called when this state is transitioned into
         /// </summary>
-        public virtual void Enter() {
-        }
+        void Enter();
 
-        public override string ToString() {
-            return GetType().Name;
-        }
-
-        #endregion Methods
+        /// <summary>
+        /// Is called when this state is transitioned out of
+        /// </summary>
+        void Leave();
     }
 }

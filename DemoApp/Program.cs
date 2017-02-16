@@ -2,53 +2,43 @@
 using GFSM;
 
 namespace DemoApp {
-    public abstract class MyStateBase : State<MyStateBase> {
-        protected MyStateBase(FiniteStateMachine<MyStateBase> stateMachine) : base(stateMachine) { }
-
+    // Entirely unnecessary, just here to implement a common DoWork()
+    public abstract class MyStateBase : IState {
+        public virtual void Enter() {}
         public abstract void DoWork();
+        public virtual void Leave() {}
     }
 
-    public class MyFiniteStateMachine : FiniteStateMachine<MyStateBase> { }
-
+    // Define a state and it's transitions
+    [Transition("next", typeof(EndState))]
     public class StartState : MyStateBase {
-        public StartState(FiniteStateMachine<MyStateBase> stateMachine) : base(stateMachine) {}
-
-        public override void Enter() => Console.WriteLine("Entered StartState");
-
         public override void DoWork() => Console.WriteLine("In StartState");
+        public override void Leave() => Console.WriteLine("\tLeaving StartState");
     }
 
+    [Transition("next", null)]
     public class EndState : MyStateBase {
-        public EndState(FiniteStateMachine<MyStateBase> stateMachine) : base(stateMachine) {}
-
-        public override void Enter() => Console.WriteLine("Entered EndState");
-
+        public override void Enter() => Console.WriteLine("\tEntered EndState");
         public override void DoWork() => Console.WriteLine("In EndState");
+        public override void Leave() => Console.WriteLine("\tLeaving EndState");
     }
 
     internal class Program {
         private static void Main() {
-            var fsm = new MyFiniteStateMachine();
-            var start = new StartState(fsm);
-            var end = new EndState(fsm);
-            fsm.States.Add(start);
-            fsm.States.Add(end);
-
-            fsm.AddTransition(new Transition<MyStateBase>("start", null, start));
-            fsm.AddTransition(new Transition<MyStateBase>("next", start, end));
-            fsm.AddTransition(new Transition<MyStateBase>("next", end, null));
-
+            var fsm = new FiniteStateMachine<StartState>();
+            
+            fsm.Transitioning += transition => Console.WriteLine($"Beginning transition: {transition}");
             fsm.Transitioned += transition => {
-                Console.WriteLine(transition);
+                Console.WriteLine($"Done transitioning: {transition}");
                 if (transition.To == null)
-                    Console.WriteLine("Exited");
+                    Console.WriteLine("\nExited");
             };
 
-            fsm.Transition("start");
-            fsm.CurrentState.DoWork();
-            fsm.Transition("next");
-            fsm.CurrentState.DoWork();
-            fsm.Transition("next");
+            Console.WriteLine("Started\n");
+            fsm.GetCurrentState<MyStateBase>().DoWork();
+            fsm.DoTransition("next");
+            fsm.GetCurrentState<MyStateBase>().DoWork();
+            fsm.DoTransition("next");
 
             Console.ReadLine();
         }
