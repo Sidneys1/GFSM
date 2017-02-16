@@ -42,18 +42,10 @@
             return t.Token == Token && t.To == To && t.From == From && t.TransitionMode == TransitionMode;
         }
 
-        public override string ToString() {
-            return $"{From} + '{Token}' = {To}";
-        }
+        public override string ToString() => $"{From?.ToString() ?? "null"} + '{Token}' = {To?.ToString() ?? "null"}";
 
-        public override int GetHashCode() {
-            return _hash;
-        }
+        public override int GetHashCode() => _hash;
 
         #endregion Methods
-
-        #region Enums
-
-        #endregion Enums
     }
 }
